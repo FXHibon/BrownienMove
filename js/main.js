@@ -50,8 +50,23 @@ function drawDrunked(canvas) {
 
     if (!started) {
         position = {x: Math.floor((Math.random() * 10)), y: Math.floor((Math.random() * 10))};
+        started = true;
     } else {
-
+        if (Math.random() > 0.5) {
+            if (Math.random() >= 0.5) {
+                position.x += 1;
+            } else {
+                position.x -= 1
+            }
+        } else {
+            if (Math.random() >= 0.5) {
+                position.y += 1;
+            } else {
+                position.y -= 1
+            }
+        }
+        position.x = position.x % 10;
+        position.y = position.y % 10;
     }
 
     ctx.fillRect(position.x * (width / 10) + 1, position.y * (height / 10) + 1, width / 10 - 2, height / 10 - 2);
