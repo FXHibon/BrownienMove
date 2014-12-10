@@ -65,10 +65,11 @@ function drawDrunked(canvas) {
                 position.y -= 1
             }
         }
-        position.x = position.x % 10;
-        position.y = position.y % 10;
+        position.x = Math.abs(position.x % 10);
+        position.y = Math.abs(position.y % 10);
     }
-
+    console.log("moving to : ");
+    console.log(position);
     ctx.fillRect(position.x * (width / 10) + 1, position.y * (height / 10) + 1, width / 10 - 2, height / 10 - 2);
 }
 function step() {
