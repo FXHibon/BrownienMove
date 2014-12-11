@@ -1,10 +1,10 @@
 var canvas = document.getElementById("mainCanvas");
 
-var width = 800,
-    height = 800;
+var width = 1300,
+    height = 1300;
 
-var rows = 100,
-    cols = 100;
+var rows = 300,
+    cols = 300;
 
 var locations = {};
 
@@ -120,7 +120,7 @@ function drawDrunked(canvas) {
 
 
     if (auto) {
-        setTimeout("drawDrunked(canvas)", 10);
+        setTimeout("drawDrunked(canvas)", 6);
     }
 
 }
