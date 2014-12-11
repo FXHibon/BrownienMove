@@ -3,8 +3,8 @@ var canvas = document.getElementById("mainCanvas");
 var width = 800,
     height = 800;
 
-var rows = 60,
-    cols = 60;
+var rows = 100,
+    cols = 100;
 
 var locations = {};
 
@@ -32,6 +32,16 @@ drunkeds["four"] = {
 
 drunkeds["five"] = {
     color: "#0F00F0",
+    location: {}
+};
+
+drunkeds["six"] = {
+    color: "#FFFFFF",
+    location: {}
+};
+
+drunkeds["seven"] = {
+    color: "#040AF0",
     location: {}
 };
 
@@ -97,11 +107,17 @@ function drawDrunked(canvas) {
 
         drunkeds[i].location.x = Math.abs(drunkeds[i].location.x % cols);
         drunkeds[i].location.y = Math.abs(drunkeds[i].location.y % rows);
-        locations[i].push(drunkeds[i].location);
+        locations[i].push({x: drunkeds[i].location.x, y: drunkeds[i].location.y});
 
         ctx.fillStyle = drunkeds[i].color;
         ctx.fillRect(drunkeds[i].location.x * (width / cols) + 1, drunkeds[i].location.y * (height / rows) + 1, width / cols - 2, height / rows - 2);
+        console.log(locations[i]);
+
+        if (locations[i].length > 50) {
+            clearDrunked(canvas, locations[i].shift());
+        }
     }
+
 
     if (auto) {
         setTimeout("drawDrunked(canvas)", 10);
