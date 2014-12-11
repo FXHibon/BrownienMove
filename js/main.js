@@ -35,6 +35,8 @@ drunkeds["five"] = {
     location: {}
 };
 
+var auto = false;
+
 function reset(can) {
     can.fillStyle = "#FFFFFF";
     can.fillRect(0, 0, width, height);
@@ -101,14 +103,26 @@ function drawDrunked(canvas) {
         ctx.fillRect(drunkeds[i].location.x * (width / cols) + 1, drunkeds[i].location.y * (height / rows) + 1, width / cols - 2, height / rows - 2);
     }
 
+    if (auto) {
+        setTimeout("drawDrunked(canvas)", 10);
+    }
+
 }
 
 /**
  * Step over
  */
-function step() {
-    console.log("Step in!");
-    drawDrunked(canvas);
+function stepAuto() {
+    var buton = document.getElementById("butAuto");
+    if (auto) {
+        auto = false;
+        buton.innerHTML = "auto"
+    } else {
+        auto = true;
+        buton.innerHTML = "stop"
+        drawDrunked(canvas);
+    }
+
 }
 
 /**
