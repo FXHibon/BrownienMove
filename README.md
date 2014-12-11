@@ -1,4 +1,6 @@
-Brownien Move
+Brownien :otion
+
+This is a very simple sample of a Brownian Motion ("Déplacement de l'hommé ivre") in java script.
 
 HOW TO
 =======
