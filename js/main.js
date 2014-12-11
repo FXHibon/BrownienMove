@@ -1,30 +1,58 @@
 var canvas = document.getElementById("mainCanvas");
-var ctx = canvas.getContext("2d");
+
 var width = 800,
     height = 800;
 
-var position = {x: 0, y: 0};
-var started = false;
+var rows = 60,
+    cols = 60;
+
+var locations = {};
+
+var drunkeds = [];
+
+drunkeds["one"] = {
+    color: "#FF0000",
+    location: {}
+};
+
+drunkeds["two"] = {
+    color: "#00FF00",
+    location: {}
+};
+
+drunkeds["three"] = {
+    color: "#0000FF",
+    location: {}
+};
+
+drunkeds["four"] = {
+    color: "#F0000F",
+    location: {}
+};
+
+drunkeds["five"] = {
+    color: "#0F00F0",
+    location: {}
+};
 
 function reset(can) {
     can.fillStyle = "#FFFFFF";
     can.fillRect(0, 0, width, height);
-
 }
 
 /**
- * draw the main grid
+ * draw the grid
  * @param canvas
  */
 function drawGrid(canvas) {
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#000000";
 
-    for (var i = 0; i < width; i += width / 10) {
+    for (var i = 0; i < width; i += width / cols) {
         ctx.moveTo(i, 0);
         ctx.lineTo(i, height);
         ctx.stroke()
-        for (var j = 0; j < height; j += height / 10) {
+        for (var j = 0; j < height; j += height / rows) {
             ctx.moveTo(0, j);
             ctx.lineTo(width, j);
             ctx.stroke()
@@ -32,11 +60,14 @@ function drawGrid(canvas) {
     }
 }
 
-function clearDrunked(canvas) {
+/**
+ * Remove from the grid the current drunked
+ * @param canvas
+ */
+function clearDrunked(canvas, drunkedLocation) {
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#FFFFFF";
-
-    ctx.fillRect(position.x * (width / 10) + 1, position.y * (height / 10) + 1, width / 10 - 2, height / 10 - 2);
+    ctx.fillRect(drunkedLocation.x * (width / cols) + 1, drunkedLocation.y * (height / rows) + 1, width / cols - 2, height / rows - 2);
 }
 
 /**
@@ -44,44 +75,58 @@ function clearDrunked(canvas) {
  * @param canvas
  */
 function drawDrunked(canvas) {
-    clearDrunked(canvas);
     var ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#FF0000";
 
-    if (!started) {
-        position = {x: Math.floor((Math.random() * 10)), y: Math.floor((Math.random() * 10))};
-        started = true;
-    } else {
+
+    for (var i in drunkeds) {
         if (Math.random() > 0.5) {
             if (Math.random() >= 0.5) {
-                position.x += 1;
+                drunkeds[i].location.x += 1;
             } else {
-                position.x -= 1
+                drunkeds[i].location.x -= 1
             }
         } else {
             if (Math.random() >= 0.5) {
-                position.y += 1;
+                drunkeds[i].location.y += 1;
             } else {
-                position.y -= 1
+                drunkeds[i].location.y -= 1
             }
         }
-        position.x = Math.abs(position.x % 10);
-        position.y = Math.abs(position.y % 10);
+
+        drunkeds[i].location.x = Math.abs(drunkeds[i].location.x % cols);
+        drunkeds[i].location.y = Math.abs(drunkeds[i].location.y % rows);
+        locations[i].push(drunkeds[i].location);
+
+        ctx.fillStyle = drunkeds[i].color;
+        ctx.fillRect(drunkeds[i].location.x * (width / cols) + 1, drunkeds[i].location.y * (height / rows) + 1, width / cols - 2, height / rows - 2);
     }
-    console.log("moving to : ");
-    console.log(position);
-    ctx.fillRect(position.x * (width / 10) + 1, position.y * (height / 10) + 1, width / 10 - 2, height / 10 - 2);
+
 }
+
+/**
+ * Step over
+ */
 function step() {
     console.log("Step in!");
     drawDrunked(canvas);
 }
 
-drawGrid(canvas);
-drawDrunked(canvas);
+/**
+ * Init data
+ */
+(function init() {
+    for (var i in drunkeds) {
+        drunkeds[i].location = {x: Math.floor((Math.random() * cols)), y: Math.floor((Math.random() * rows))};
+        locations[i] = [];
+        locations[i].push(drunkeds[i].location);
+    }
 
-/*
-ctx.fillStyle = "#FF0000";
-ctx.fillRect(0,0,150,75);
-*/
+    drawDrunked(canvas);
+})();
 
+
+(function addKeyboardListener() {
+    document.onkeypress = function () {
+        step();
+    };
+})();
