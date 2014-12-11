@@ -1,4 +1,4 @@
-Brownien :otion
+Brownien Motion
 
 This is a very simple sample of a Brownian Motion ("Déplacement de l'hommé ivre") in java script.
 
@@ -12,6 +12,7 @@ TODO
 
 - Add collision detection system
 - Add customization system
+- Refactor the code
 
 #3 - Authors
 - [FXHibon](https://github.com/FXHibon)

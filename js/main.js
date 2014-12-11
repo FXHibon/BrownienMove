@@ -111,7 +111,6 @@ function drawDrunked(canvas) {
 
         ctx.fillStyle = drunkeds[i].color;
         ctx.fillRect(drunkeds[i].location.x * (width / cols) + 1, drunkeds[i].location.y * (height / rows) + 1, width / cols - 2, height / rows - 2);
-        console.log(locations[i]);
 
         if (locations[i].length > 50) {
             clearDrunked(canvas, locations[i].shift());
