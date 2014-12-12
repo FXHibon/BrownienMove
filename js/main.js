@@ -53,33 +53,13 @@ function reset(can) {
 }
 
 /**
- * draw the grid
- * @param canvas
- */
-function drawGrid(canvas) {
-    var ctx = canvas.getContext("2d");
-    ctx.fillStyle = "#000000";
-
-    for (var i = 0; i < width; i += width / cols) {
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i, height);
-        ctx.stroke()
-        for (var j = 0; j < height; j += height / rows) {
-            ctx.moveTo(0, j);
-            ctx.lineTo(width, j);
-            ctx.stroke()
-        }
-    }
-}
-
-/**
  * Remove from the grid the current drunked
  * @param canvas
  */
 function clearDrunked(canvas, drunkedLocation) {
     var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(drunkedLocation.x * (width / cols) + 1, drunkedLocation.y * (height / rows) + 1, width / cols - 2, height / rows - 2);
+    ctx.fillRect(drunkedLocation.x * (width / cols), drunkedLocation.y * (height / rows), width / cols, height / rows);
 }
 
 /**
@@ -91,22 +71,17 @@ function drawDrunked(canvas) {
 
 
     for (var i in drunkeds) {
-        if (Math.random() > 0.5) {
-            if (Math.random() >= 0.5) {
-                drunkeds[i].location.x += 1;
-            } else {
-                drunkeds[i].location.x -= 1
-            }
-        } else {
-            if (Math.random() >= 0.5) {
-                drunkeds[i].location.y += 1;
-            } else {
-                drunkeds[i].location.y -= 1
-            }
-        }
 
-        drunkeds[i].location.x = Math.abs(drunkeds[i].location.x % cols);
-        drunkeds[i].location.y = Math.abs(drunkeds[i].location.y % rows);
+        var axe = (Math.random() - 0.5) > 0 ? "x" : "y",
+            plusOrMinus = (Math.random() - 0.5) > 0 ? 1 : -1;
+
+        drunkeds[i].location[axe] += plusOrMinus;
+
+        do {
+            drunkeds[i].location.x = Math.abs(drunkeds[i].location.x % cols);
+            drunkeds[i].location.y = Math.abs(drunkeds[i].location.y % rows);
+        } while (!isFree(drunkeds[i].location));
+
         locations[i].push({x: drunkeds[i].location.x, y: drunkeds[i].location.y});
 
         ctx.fillStyle = drunkeds[i].color;
@@ -117,24 +92,36 @@ function drawDrunked(canvas) {
         }
     }
 
-
     if (auto) {
         setTimeout("drawDrunked(canvas)", 6);
     }
-
 }
 
 /**
- * Step over
+ * To know if a location is free or not
+ * @param aLocation
+ */
+function isFree(aLocation) {
+    for (var liste in locations) {
+        for (var i in liste) {
+            if (i.x == aLocation.x && i.y == aLocation.y) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ * Toggle automatic stepping
  */
 function stepAuto() {
     var buton = document.getElementById("butAuto");
+
+    buton.innerHTML = auto ? "stop" : "auto";
+    auto = !auto;
+
     if (auto) {
-        auto = false;
-        buton.innerHTML = "auto"
-    } else {
-        auto = true;
-        buton.innerHTML = "stop"
         drawDrunked(canvas);
     }
 
@@ -145,17 +132,13 @@ function stepAuto() {
  */
 (function init() {
     for (var i in drunkeds) {
-        drunkeds[i].location = {x: Math.floor((Math.random() * cols)), y: Math.floor((Math.random() * rows))};
+        drunkeds[i].location = {
+            x: Math.floor((Math.random() * cols)),
+            y: Math.floor((Math.random() * rows))
+        };
         locations[i] = [];
         locations[i].push(drunkeds[i].location);
     }
 
     drawDrunked(canvas);
-})();
-
-
-(function addKeyboardListener() {
-    document.onkeypress = function () {
-        step();
-    };
 })();
