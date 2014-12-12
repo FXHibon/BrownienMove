@@ -1,99 +1,63 @@
 var canvas = document.getElementById("mainCanvas");
+var button = document.getElementById("butAuto");
+var ctx = canvas.getContext("2d");
 
-var width = 1300,
-    height = 1300;
+var width = 1200,
+    height = 1200;
 
-var rows = 300,
-    cols = 300;
+var rows = 1200;
 
-var locations = {};
-
-var drunkeds = [];
-
-drunkeds["one"] = {
-    color: "#FF0000",
-    location: {}
-};
-
-drunkeds["two"] = {
-    color: "#00FF00",
-    location: {}
-};
-
-drunkeds["three"] = {
-    color: "#0000FF",
-    location: {}
-};
-
-drunkeds["four"] = {
-    color: "#F0000F",
-    location: {}
-};
-
-drunkeds["five"] = {
-    color: "#0F00F0",
-    location: {}
-};
-
-drunkeds["six"] = {
-    color: "#FFFFFF",
-    location: {}
-};
-
-drunkeds["seven"] = {
-    color: "#040AF0",
-    location: {}
-};
+var particles = [];
 
 var auto = false;
 
-function reset(can) {
-    can.fillStyle = "#FFFFFF";
-    can.fillRect(0, 0, width, height);
-}
-
 /**
- * Remove from the grid the current drunked
- * @param canvas
+ * Remove from the canvas the given particle
+ * @param particle The particle to be removed
  */
-function clearDrunked(canvas, drunkedLocation) {
-    var ctx = canvas.getContext("2d");
+function clearParticle(particle) {
+    var locationToRemove = particle.locations.shift();
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(drunkedLocation.x * (width / cols), drunkedLocation.y * (height / rows), width / cols, height / rows);
+    ctx.fillRect(locationToRemove.x * (width / rows), locationToRemove.y * (height / rows), width / rows, height / rows);
 }
 
 /**
- * draw a single "drunked case"
+ * Draw a single particle
+ * @param particle The particule to be drawn
+ */
+function drawParticle(particle) {
+    var currentLocation = {x: particle.location.x, y: particle.location.y};
+    do {
+        particle.location = currentLocation;
+
+        var axe = (Math.random() - 0.5) > 0 ? "x" : "y";
+        var plusOrMinus = (Math.random() - 0.5) > 0 ? 1 : -1;
+
+        particle.location[axe] += plusOrMinus;
+        particle.location[axe] = Math.abs(particle.location[axe] % rows);
+    } while (!isFree(particle.location));
+
+    particle.locations.push({x: particle.location.x, y: particle.location.y});
+
+    ctx.fillStyle = particle.color;
+    ctx.fillRect(particle.location.x * (width / rows) + 1, particle.location.y * (height / rows) + 1, width / rows - 2, height / rows - 2);
+
+    if (particle.locations.length > 50) {
+        clearParticle(particle);
+    }
+}
+
+/**
+ * draw all particles
  * @param canvas
  */
-function drawDrunked(canvas) {
-    var ctx = canvas.getContext("2d");
-
-
-    for (var i in drunkeds) {
-
-        var axe = (Math.random() - 0.5) > 0 ? "x" : "y",
-            plusOrMinus = (Math.random() - 0.5) > 0 ? 1 : -1;
-
-        drunkeds[i].location[axe] += plusOrMinus;
-
-        do {
-            drunkeds[i].location.x = Math.abs(drunkeds[i].location.x % cols);
-            drunkeds[i].location.y = Math.abs(drunkeds[i].location.y % rows);
-        } while (!isFree(drunkeds[i].location));
-
-        locations[i].push({x: drunkeds[i].location.x, y: drunkeds[i].location.y});
-
-        ctx.fillStyle = drunkeds[i].color;
-        ctx.fillRect(drunkeds[i].location.x * (width / cols) + 1, drunkeds[i].location.y * (height / rows) + 1, width / cols - 2, height / rows - 2);
-
-        if (locations[i].length > 50) {
-            clearDrunked(canvas, locations[i].shift());
-        }
-    }
+function drawParticles() {
+    particles.forEach(function (particle) {
+        drawParticle(particle);
+    });
 
     if (auto) {
-        setTimeout("drawDrunked(canvas)", 6);
+        setTimeout("drawParticles()", 10);
     }
 }
 
@@ -102,13 +66,13 @@ function drawDrunked(canvas) {
  * @param aLocation
  */
 function isFree(aLocation) {
-    for (var liste in locations) {
-        for (var i in liste) {
-            if (i.x == aLocation.x && i.y == aLocation.y) {
-                return false;
-            }
-        }
-    }
+    //for (var liste in locations) {
+    //    for (var i in liste) {
+    //        if (i.x == aLocation.x && i.y == aLocation.y) {
+    //            return false;
+    //        }
+    //    }
+    //}
     return true;
 }
 
@@ -116,29 +80,36 @@ function isFree(aLocation) {
  * Toggle automatic stepping
  */
 function stepAuto() {
-    var buton = document.getElementById("butAuto");
 
-    buton.innerHTML = auto ? "stop" : "auto";
+
     auto = !auto;
-
+    button.innerHTML = auto ? "Stop" : "Auto";
     if (auto) {
-        drawDrunked(canvas);
+        drawParticles(canvas);
     }
 
 }
 
 /**
+ * Generate a random location
+ * @returns {{x: number, y: number}}
+ */
+function randomLocation() {
+    return {
+        x: Math.floor((Math.random() * rows)),
+        y: Math.floor((Math.random() * rows))
+    };
+}
+
+function addParticle() {
+    var color = document.getElementById("colorPicker").value;
+    particles.push(new Particle(color, randomLocation()));
+}
+
+/**
  * Init data
  */
-(function init() {
-    for (var i in drunkeds) {
-        drunkeds[i].location = {
-            x: Math.floor((Math.random() * cols)),
-            y: Math.floor((Math.random() * rows))
-        };
-        locations[i] = [];
-        locations[i].push(drunkeds[i].location);
-    }
-
-    drawDrunked(canvas);
+(function bootstrap() {
+    particles.push(new Particle("#FF0000", randomLocation()));
+    drawParticles(canvas);
 })();

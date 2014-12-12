@@ -1,17 +1,29 @@
 <!doctype html>
 <html lang="fr">
-    <head>
-        <meta charset="utf-8">
-        <title>Mouvement Brownien</title>
-    </head>
-    <body>
+<head>
+    <meta charset="utf-8">
+    <title>Mouvement Brownien</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
 
-    <canvas id="mainCanvas" width="1300" height="1300"
-                style="border:1px solid #000000;">
-        </canvas>
+<div>
+    <canvas id="mainCanvas" width="925" height="925"
+            style="border:1px solid #000000;">
+    </canvas>
+</div>
 
+<div class="rightPannel">
+    <div>
         <button id="butAuto" onclick="stepAuto()">Auto</button>
+    </div>
+    <div>
+        <input type="color" id="colorPicker"/>
+        <button id="butAddParticle" onclick="addParticle()">Add particle</button>
+    </div>
+</div>
+<script src="js/Particle.class.js"></script>
+<script src="js/main.js"></script>
 
-        <script src="js/main.js"></script>
-    </body>
+</body>
 </html>
